@@ -1,0 +1,36 @@
+{% extends 'i55wm.layout.html.twig' %}
+{% set active = 'homepage' %}
+
+{% block content %}
+  <h1>Welcome to the i3 Web Manager.</h1>
+
+  {# No config found #}
+  {% if (configs == null) %}
+    <p>No previous configuration was found, do you want to create it ?</p>
+    <ul>
+      <li><a href="/config/new">Create new config</a></li>
+      <li>Upload one (not ready yet)</li>
+    </ul>
+
+  {# Config found #}
+  {% else %}
+  <p>These are the current existing config, which one do you want to edit ?</p>
+  <ul>
+    {% for config in configs %}
+    <li>
+      <a href="/config/{{ config }}">{{ config|e }}</a>
+      -
+      <a href="/config/{{ config }}/remove">X Remove</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <p><a href="/config/new">Create a new configuration</a></p>
+
+  {% if has_configuration == true %}
+    <a href="/default_configuration">See your default configuration</a>
+  {% else %}
+    You don't have a default workspace configuration, <a href="/new_configuration">start one?</a>
+  {% endif %}
+
+{% endblock %}

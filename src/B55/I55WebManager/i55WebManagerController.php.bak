@@ -1,0 +1,379 @@
+<?php
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+use B55\i55WebManager as i55wm;
+use B55\i55WebManager\Entity\i55Client as i55Client;
+use B55\i55WebManager\Entity\i55Workspace as i55Workspace;
+use B55\i55WebManager\Entity\i55Scratchpad as i55Scratchpad;
+use B55\i55WebManager\Forms;
+use B55\i55WebManager\i55ConfigParser;
+
+require_once __DIR__ . '/Resources/lib/utils.php';
+
+$app['i55wm'] = function () use ($app) {
+  $default_file = getYamlFilePathFromApp($app);
+  return new B55\i55WebManager\i55WebManager($default_file);
+};
+
+$app['i55wm_forms'] = array(
+  'configForm' => new B55\Form\i55WebManagerForms($app['form.factory']),
+);
+
+/* INDEX */
+$app->match('/i55WebManager', function () use ($app) {
+  $i55wm = $app['i55wm'];
+
+  if ($i55wm->is_new() === true) {
+    return $app['twig']->render('index.html', array(
+      'configs' => null,
+      'has_configuration' => false,
+    ));
+  }
+  else {
+    return $app['twig']->render('index.html', array(
+      'configs' => $i55wm->getConfigsNames(),
+      'has_configuration' => $i55wm->has_configuration(),
+    ));
+  }
+});
+
+/* Create config page */
+$app->match('/config/new', function (Request $request) use ($app) {
+  $i55wm = $app['i55wm'];
+  $i55Form = $app['i55wm_forms']['configForm'];
+
+  $form = $i55Form->getAddForm();
+  $data = array();
+  if ('POST' === $request->getMethod()) {
+    $form->bind($request);
+
+    if ($form->isValid()) {
+      $data = $form->getData();
+
+      $i55wm->addConfig($data['config_name'], $data['config_nb_workspace']);
+      $default_file = getYamlFilePathFromApp($app);
+      $i55wm->save($default_file);
+
+      return $app->redirect('/config/'.$data['config_name']);
+    }
+  }
+
+  return $app['twig']->render('config/new.html', array(
+    'form' => $form->createView()
+  ));
+});
+
+/* List of workspace */
+$app->match('/config/{config_name}', function ($config_name) use ($app) {
+  $i55wm = $app['i55wm'];
+  if (!is_string($config_name)) {
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+
+  $conf = $i55wm->getConfigs($config_name);
+
+  return $app['twig']->render('config/see.html', array(
+    'config' => $conf,
+  ));
+});
+
+/* Remove config */
+$app->match('/config/{config_name}/remove', function ($config_name) use ($app) {
+  if (!is_string($config_name)) {
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+
+  $i55wm = $app['i55wm'];
+  $i55wm->removeConfig($config_name);
+
+  return $app->redirect('/');
+});
+
+
+/* List of clients */
+$app->match('/config/{config_name}/workspace/{workspace_name}',
+  function (Request $request, $config_name, $workspace_name) use ($app) {
+
+  $i55wm = $app['i55wm'];
+  if (!is_string($config_name) || !is_string($workspace_name)) {
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+
+  $i55Config = $i55wm->getConfigs($config_name);
+
+  $data = array();
+  if ($workspace_name == 'new') {
+    $i55Workspace = new i55Workspace('new');
+    $data['is_new'] = 1;
+  }
+  else {
+    $i55Workspace = $i55Config->getWorkspaces($workspace_name);
+
+    if ($i55Workspace instanceof i55Workspace) {
+      $data = array(
+        'name' => $i55Workspace->getName(),
+        'default_layout' => $i55Workspace->getDefaultLayout(),
+        'is_new' => 0,
+      );
+    }
+  }
+
+  $i55Form = $app['i55wm_forms']['configForm'];
+  $form = $i55Form->getWorkspaceForm($data, geti55Layouts());
+
+  if ('POST' === $request->getMethod()) {
+    $form->bind($request);
+    if ($form->isValid()) {
+      $data = $form->getData();
+      if ($data['is_new'] == 1) {
+        $i55Config->addWorkspace(new i55Workspace($data['name']));
+      }
+      else {
+        $i55Workspace->setName($data['name']);
+        $i55Workspace->setDefaultLayout($data['default_layout']);
+      }
+      $i55wm->save();
+      return $app->redirect('/config/' . $config_name);
+    }
+  }
+
+  return $app['twig']->render('config/see_workspace.html', array(
+    'form' => $form->createView(),
+    'config_name' => $config_name,
+    'workspace' => $i55Workspace,
+  ));
+
+});
+
+/* Remove workspace */
+$app->match('/config/{config_name}/workspace/{workspace_name}/remove',
+  function ($config_name, $workspace_name) use ($app) {
+
+  if (!is_string($config_name) || !is_string($workspace_name)) {
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+  $i55wm = $app['i55wm'];
+  $i55wm->removeWorkspace($config_name, $workspace_name);
+
+  return $app->redirect('/config/' . $config_name);
+});
+
+/* Edit a client */
+$app->match('/config/{config_name}/workspace/{workspace_name}/{client_name}',
+  function (Request $request, $config_name, $workspace_name, $client_name = NULL) use ($app) {
+
+  $i55wm = $app['i55wm'];
+  if (!is_string($config_name) || !is_string($workspace_name)
+    || ($client_name && !is_string($client_name))) {
+
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+
+  $i55Config = $i55wm->getConfigs($config_name);
+  $i55Workspace = $i55Config->getWorkspaces($workspace_name);
+
+  $data = array();
+  if ($client_name == 'new') {
+    $i55Client = new i55Client('new');
+    $data['is_new'] = 1;
+  }
+  else {
+    $i55Client = $i55Workspace->getClient($client_name);
+
+    if ($i55Client instanceof i55Client) {
+      $data = array(
+        'name' => $i55Client->getName(),
+        'command' => $i55Client->getCommand(),
+        'arguments' => $i55Client->getArguments(),
+        'is_new' => 0,
+      );
+    }
+  }
+
+  $i55Form = $app['i55wm_forms']['configForm'];
+  $form = $i55Form->getClientForm($data);
+
+  if ('POST' === $request->getMethod()) {
+    $form->bind($request);
+    if ($form->isValid()) {
+      $data = $form->getData();
+      $i55Client->setName($data['name']);
+      $i55Client->setCommand($data['command']);
+      $i55Client->setArguments($data['arguments']);
+
+      if ($data['is_new'] == 1) {
+        $i55wm->addClient($config_name, $workspace_name, $i55Client);
+      }
+      else {
+        $i55wm->save();
+      }
+
+      return $app->redirect('/config/' . $config_name . '/workspace/' .  $workspace_name);
+    }
+  }
+
+  return $app['twig']->render('config/see_clients.html', array(
+    'config_name' => $config_name,
+    'workspace_name' => $workspace_name,
+    'client' => $i55Client,
+    'form' => $form->createView(),
+  ));
+});
+/* Remove client */
+$app->match('/config/{config_name}/workspace/{workspace_name}/{client_name}/remove',
+  function ($config_name, $workspace_name, $client_name) use ($app) {
+
+  if (!is_string($config_name) || !is_string($workspace_name)
+    || !is_string($client_name)) {
+
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+
+  $i55wm = $app['i55wm'];
+  $i55wm->load();
+  $i55wm->removeClient($config_name, $workspace_name, $client_name);
+
+  return $app->redirect('/config/' . $config_name . '/workspace/' . $workspace_name);
+});
+
+/* Add Scratchpad */
+$app->match('/config/{config_name}/scratchpad/{client_name}',
+  function (Request $request, $config_name, $client_name) use ($app) {
+
+  if (!is_string($config_name) || !is_string($client_name)) {
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+
+  $i55wm = $app['i55wm'];
+
+  $data = array();
+  if ($client_name == 'new') {
+    $i55Client = new i55Client('new');
+    $data['is_new'] = 1;
+  }
+  else {
+    $i55Client = $i55wm->getConfigs($config_name)->getScratchpads($client_name);
+
+    if ($i55Client instanceof i55Client) {
+      $data = array(
+        'name' => $i55Client->getName(),
+        'command' => $i55Client->getCommand(),
+        'arguments' => $i55Client->getArguments(),
+        'is_new' => 0,
+      );
+    }
+  }
+
+  $i55Form = $app['i55wm_forms']['configForm'];
+  $form = $i55Form->getClientForm($data);
+
+  if ('POST' === $request->getMethod()) {
+    $form->bind($request);
+    if ($form->isValid()) {
+      $data = $form->getData();
+      $i55Client->setName($data['name']);
+      $i55Client->setCommand($data['command']);
+      $i55Client->setArguments($data['arguments']);
+
+      if ($data['is_new'] == 1) {
+        $i55wm->getConfigs($config_name)->addScratchpad($i55Client);
+      }
+      $i55wm->save();
+
+      return $app->redirect('/config/' . $config_name);
+    }
+  }
+
+  return $app['twig']->render('config/scratchpad.html', array(
+    'config_name' => $config_name,
+    'client' => $i55Client,
+    'form' => $form->createView(),
+  ));
+
+});
+
+$app->match('/config/{config_name}/scratchpad/{client_name}/remove',
+  function ($config_name, $client_name) use ($app) {
+
+  if (!is_string($config_name)) {
+    return new Response($app['twig']->render('404.html', array('code' => 404)), 404);
+  }
+
+  $i55wm = $app['i55wm'];
+  $i55wm->load();
+  $i55wm->getConfigs($config_name)->removeScratchpad($client_name);
+  $i55wm->save();
+
+  return $app->redirect('/config/' . $config_name);
+});
+
+$app->match('/parse', function (Request $request) use ($app) {
+  $upload = false;
+  $config_file = false;
+  $form_view = null;
+  $i55ParsedConfig = null;
+
+  $i55wm = $app['i55wm'];
+  $i55Form = $app['i55wm_forms']['configForm'];
+  $form = $i55Form->getUploadConfigForm();
+
+  if ('POST' === $request->getMethod() || is_file($app['i55_config_file'])) {
+    if ($request->getMethod() === 'POST') {
+      $form->bind($request);
+      if ($form->isValid()) {
+        $dir = __DIR__ . '/Resources';
+        $data = $form->getData();
+        $file = $form['config_file']->getData();
+        $ret = $file->move($dir, $file->getClientOriginalName());
+        $filename = $file->getClientOriginalName();
+        $file = $dir . '/' . $filename;
+      }
+    }
+    else {
+      $file = $app['i55_config_file'];
+    }
+
+    $i55ConfigParser = new i55ConfigParser($file);
+    $i55ParsedConfig = $i55ConfigParser->parse();
+    $i55wm->getConfiguration()->setDefaultWorkspaces($i55ParsedConfig);
+    $i55wm->save();
+
+    return $app->redirect('/default_configuration');
+  }
+  else {
+    $upload = true;
+  }
+
+  return $app['twig']->render('parse.html', array(
+    'upload_form' => $upload,
+    'config_file' => $config_file,
+    'form' => $form->createView(),
+    'config' => $i55ParsedConfig,
+  ));
+});
+
+$app->match('/new_configuration', function () use ($app) {
+  //TODO
+});
+
+$app->match('/default_configuration', function() use ($app) {
+  $i55wm = $app['i55wm'];
+  $i55wm->load();
+  $defaultWorkspaces = $i55wm->getConfiguration()->getDefaultWorkspaces();
+
+  return $app['twig']->render('default_configuration.html', array(
+    'defaultWorkspaces' => $defaultWorkspaces,
+  ));
+});
+
+$app->error(function (\Exception $e, $code) use ($app) {
+  if ($app['debug']) {
+    return;
+  }
+  $page = 404 == $code ? '404.html' : '500.html';
+  return new Response($app['twig']->render($page,  array('code' => $code)),  $code);
+});

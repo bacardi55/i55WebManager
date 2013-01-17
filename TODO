@@ -1,0 +1,30 @@
+TODO list:
+==========
+
+Priority 1:
+  V. Create yaml config by the web interface
+    V. First version will handle client in workspace only
+  Console App that will launch the config to start creating client in workspace
+  Add client in Scratchpad
+
+
+Priority 2:
+  V. Create a minimal console that let the user create workspace/client with CLI interface
+    (The CLI interface will never have as much features as the web interface due to my bash scripting level)
+  Improve web interface
+    - Second version will handle container and layout
+
+
+Priority 3:
+  Create a Bash script in order to not have PHP installed
+    (The creation process will always be in PHP tough)
+  Load configuration from .i3/config file to know the workspace name/number
+
+
+Priority 4:
+
+
+Priority 5:
+  Full Drag&Drop UI to create your workspace
+  Wizzard to create your i3/config file.
+  Wizzard to handle different i3/config
