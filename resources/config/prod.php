@@ -34,9 +34,9 @@ $app['assetic.filter.yui_compressor.path'] = '/usr/share/yui-compressor/yui-comp
 // configure your app for the production environment
 $app['i55WebManager'] = array(
   'default' => array(
-    'path' => __DIR__ . '/../src/b55/I55WebManager/Resources/',
+    'path' => __DIR__ . '/../../src/B55/I55WebManager/Resources/',
     'name' => 'i55config.yml',
   )
 );
 
-$app['i3_config_file'] = __DIR__ . '/../src/b55/Resources/config';
+$app['i3_config_file'] = __DIR__ . '/../../src/B55/Resources/config';
