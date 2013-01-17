@@ -28,8 +28,17 @@
                 <a class="brand" href="{{ path('i55WebManager') }}">{{ 'i55WebManager'|trans }}</a>
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li {% if 'configuration' == active %}class="active"{% endif %}><a href="{# path('i55wm/config') #}">{{ 'Configuration'|trans }}</a></li>
-                        <li {% if 'configuration' == active %}class="active"{% endif %}><a href="{# path('i55wm/config') #}">{{ 'Workspaces'|trans }}</a></li>
+                        <li {% if 'global_configuration' == active %}class="active"{% endif %}><a href="{# path('i55wm/config') #}">{{ 'Global Configuration'|trans }}</a></li>
+                        <li class="dropdown{% if 'i3_configuration' == active %} active{% endif %}">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                {{ 'i3 Configurations'|trans }} <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for workspace in workspaces %}
+                                  <li><a href="">{{ workspace|trans }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>

@@ -19,12 +19,14 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
             return $app['twig']->render($template,  array(
                 'configs' => null,
                 'has_configuration' => false,
+                'workspaces' => array(),
             ));
         }
         else {
             return $app['twig']->render($template,  array(
                 'configs' => $i55wm->getConfigsNames(),
                 'has_configuration' => $i55wm->has_configuration(),
+                'workspaces' => $app['I55wm']->getconfigsNames(),
             ));
         }
             return $app['twig']->render('i55wm.index.html.twig', array());
