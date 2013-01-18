@@ -166,9 +166,11 @@ class I55WebManager {
     $filename = $this->file;
 
     if (false === file_put_contents($filename, utf8_encode($yaml), LOCK_EX)) {
+      // Add exception.
       die('Error saving the file, make sure that a file can be created in the folder src/B55/Resources');
     }
     $this->plain_config = Yaml::parse($filename);
+    return true;
   }
 
   /**

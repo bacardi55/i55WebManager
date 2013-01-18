@@ -1,11 +1,11 @@
 <?php
-namespace b55;
+namespace B55\I55WebManager;
 
-use b55\Entity;
-use b55\Entity\i55Config;
-use b55\Entity\i55Workspace;
+//use B55\Entity;
+use B55\I55WebManager\Entity\I55Config;
+use B55\I55WebManager\Entity\I55Workspace;
 
-class i55ConfigParser{
+class I55ConfigParser {
   protected $filename;
   protected $workpaces;
 

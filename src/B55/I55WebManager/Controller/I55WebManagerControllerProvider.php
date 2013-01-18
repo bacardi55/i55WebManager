@@ -6,7 +6,8 @@ use Silex\ControllerProviderInterface;
 
 use Symfony\Component\HttpFoundation\Request;
 
-use B55\I55WebManager\Forms\I55wmForms as I55wmForms;
+use B55\I55WebManager as I55WebManager;
+//use B55\I55WebManager\Forms\I55wmForms as I55wmForms;
 
 class I55WebManagerControllerProvider implements ControllerProviderInterface {
     public function connect(Application $app)
@@ -57,42 +58,51 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
             $form_view = $i55ParsedConfig = $upload = $config_file = false;
 
             $i55wm = $app['I55wm'];
-            $i55Form = new I55wmForms($app['form.factory']);
+            $i55Form = new I55WebManager\Forms\I55wmForms($app['form.factory']);
             $form = $i55Form->getUploadConfigForm();
 
             if ('POST' === $request->getMethod() || is_file($app['i55_config_file'])) {
-              if ($request->getMethod() === 'POST') {
-                $form->bind($request);
-                if ($form->isValid()) {
-                  $dir = __DIR__ . '/Resources';
-                  $data = $form->getData();
-                  $file = $form['config_file']->getData();
-                  $ret = $file->move($dir, $file->getClientOriginalName());
-                  $filename = $file->getClientOriginalName();
-                  $file = $dir . '/' . $filename;
+                if ($request->getMethod() === 'POST') {
+                    $form->bind($request);
+                    if ($form->isValid()) {
+                        $dir = __DIR__ . '/Resources';
+                        $data = $form->getData();
+                        $file = $form['config_file']->getData();
+                        $ret = $file->move($dir, $file->getClientOriginalName());
+                        $filename = $file->getClientOriginalName();
+                        $file = $dir . '/' . $filename;
+                    }
                 }
-              }
-              else {
-                $file = $app['i55_config_file'];
-              }
+                else {
+                    $file = $app['i55_config_file'];
+                }
 
-              $i55ConfigParser = new i55ConfigParser($file);
-              $i55ParsedConfig = $i55ConfigParser->parse();
-              $i55wm->getConfiguration()->setDefaultWorkspaces($i55ParsedConfig);
-              $i55wm->save();
+                $i55ConfigParser = new I55WebManager\I55ConfigParser($file);
+                if (count($i55ParsedConfig)) {
+                    $app['session']->setFlash('success', 'Your i3 config file has been parsed successfully');
+                } else {
+                    $app['session']->setFlash('error', 'Error while parsing your i3 config file');
+                }
 
-              return $app->redirect('/default_configuration');
+                $i55ParsedConfig = $i55ConfigParser->parse();
+                $i55wm->getConfiguration()->setDefaultWorkspaces($i55ParsedConfig);
+
+                $i55wm->save();
+
+                return $app->redirect(
+                  $app['url_generator']->generate('i55wm-configuration')
+                );
             }
             else {
-              $upload = true;
+                $upload = true;
             }
 
             return $app['twig']->render('i55wm.configuration/i55wm.load.html.twig', array(
-              'upload_form' => $upload,
-              'config_file' => $config_file,
-              'form' => $form->createView(),
-              'config' => $i55ParsedConfig,
-              'configurations' => $app['I55wm']->getConfigsNames(), //TODO try to optimize this
+                'upload_form' => $upload,
+                'config_file' => $config_file,
+                'form' => $form->createView(),
+                'config' => $i55ParsedConfig,
+                'configurations' => $app['I55wm']->getConfigsNames(), //TODO try to optimize this
             ));
         })->bind('i55wm-load-config');
 
