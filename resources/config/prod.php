@@ -39,4 +39,4 @@ $app['i55WebManager'] = array(
   )
 );
 
-$app['i3_config_file'] = __DIR__ . '/../../src/B55/Resources/config';
+$app['i55_config_file'] = __DIR__ . '/../../src/B55/Resources/config';

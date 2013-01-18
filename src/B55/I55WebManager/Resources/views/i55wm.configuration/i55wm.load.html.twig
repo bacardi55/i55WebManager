@@ -1,0 +1,13 @@
+{% extends "i55wm.layout.html.twig" %}
+
+{% block content %}
+    {% if (upload_form == true) %}
+        <p>
+            Upload your i3 config file :
+            <form action="#" method="post" {{ form_enctype(form) }}>
+                {{ form_widget(form) }}
+                <input type="submit" name="submit" />
+            </form>
+        </p>
+    {% endif %}
+{% endblock %}

@@ -1,7 +1,7 @@
 <?php
 namespace B55\I55WebManager\Forms;
 
-class configForms {
+class I55wmForms{
   protected $form_factory;
 
   public function __construct($form_factory) {

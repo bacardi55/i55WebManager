@@ -53,7 +53,7 @@ class I55WebManager {
     $this->configs = $configs;
   }
 
-  public function getconfigsNames() {
+  public function getConfigsNames() {
     return array_keys($this->plain_config['I55Config']);
   }
 
