@@ -1,0 +1,9 @@
+resources/cache/*
+resources/log/*
+vendor/
+web/assets/*
+silex.log
+*.swp
+session.vim
+tags
+*.log
