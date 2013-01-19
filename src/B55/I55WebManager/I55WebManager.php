@@ -53,10 +53,6 @@ class I55WebManager {
     $this->configs = $configs;
   }
 
-  public function getConfigsNames() {
-    return array_keys($this->plain_config['I55Config']);
-  }
-
   public function addConfig($config_name, $nb_workspaces = 0) {
     $this->configs[] = new I55Config($config_name, $nb_workspaces);
     $this->save();
@@ -71,6 +67,14 @@ class I55WebManager {
     $this->configs = array_merge($this->configs);
     $this->save();
   }
+
+  public function getConfigsNames() {
+    return array_keys($this->plain_config['I55Config']);
+  }
+  public function createConfig($config_name = 'new') {
+      return new I55Config($config_name);
+  }
+
 
   /* Clients */
   public function addClient($config_name, $workspace_name, I55Client $i55Client, $container_name = NULL) {
@@ -89,6 +93,7 @@ class I55WebManager {
       $this->save();
     }
   }
+
 
   /* Workspaces */
   public function setWorkspace($config_name, I55Workspace $i55Workspace, $workspace_to_replace = NULL) {
@@ -122,6 +127,7 @@ class I55WebManager {
       return;
     }
   }
+
 
   /* Configuration */
   public function getConfiguration() {
@@ -277,6 +283,7 @@ class I55WebManager {
       $i3Msg->open_scratchpad($scratchpad);
     }
   }
+
 
   /* Private Methods */
   /**

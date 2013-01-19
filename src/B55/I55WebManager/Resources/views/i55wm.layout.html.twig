@@ -35,10 +35,10 @@
                             </a>
                             <ul class="dropdown-menu">
                                 {% for configuration in configurations %}
-                                  <li><a href="">{{ configuration|trans }}</a></li>
+                                  <li><a href="{{ path('i55wm-i3config', {'config_name': configuration}) }}">{{ configuration|trans }}</a></li>
                                 {% endfor %}
                                 <li class="divider"></li>
-                                <li><a href="">New configuration</a></li>
+                                <li><a href="{{ path('i55wm-i3config') }}">New configuration</a></li>
                             </ul>
                         </li>
                     </ul>

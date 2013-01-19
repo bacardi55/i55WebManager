@@ -5,10 +5,10 @@
 
     <h2>Default workspaces</h2>
     <p>Default workspaces let you start a new configuration with all your default
-      workspace pre-configured.
-      <br />
-      You can upload your config file ou use the settings to set its path to load
-      your workspace from your i3/config file.
+        workspace pre-configured.
+        <br />
+        You can upload your config file ou use the settings to set its path to load
+        your workspace from your i3/config file.
     </p>
 
     {% if defaultWorkspaces %}
@@ -24,11 +24,10 @@
         <p>No default workspaces found.</p>
     {% endif %}
 
-    <p>
-        <a href="{{ path('i55wm-load-config') }}">Reload your i3 configuration file</a><br />
-    <p>
+    <p><a href="{{ path('i55wm-load-config') }}">
+        <button class="btn btn-success">
+            Reload your i3 configuration file
+        </button>
+    </a></p>
 
-    <p>
-        <a href="{{ path('i55WebManager') }}">homepage</a>
-    </p>
 {% endblock %}

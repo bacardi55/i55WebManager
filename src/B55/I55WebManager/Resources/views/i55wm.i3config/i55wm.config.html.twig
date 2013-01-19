@@ -1,0 +1,31 @@
+{% extends "i55wm.layout.html.twig" %}
+
+{% block content %}
+    {% if exists == true %}
+        <h1>Edit your configuration « {{ config.name }} »</h1>
+    {% else %}
+        <h1>Create your starting configuration</h1>
+    {% endif %}
+
+    <div>
+        <form action="#" method="post">
+            {{ form_widget(form) }}
+            <input class="btn" type="submit" name="submit" />
+        </form>
+    </div>
+
+    <ul>
+        {% for workspace in config.workspaces %}
+            <li>
+                «{{ workspace.name|e }}»
+                <a href="{{ path('i55wm-workspace', {'config': config.name, 'workspace_name': workspace.name}) }}"
+                    <button class="btn">Edit</button>
+                </a>
+                <a href="">
+                    <button class="btn btn-danger">Remove</button>
+                </a>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

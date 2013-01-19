@@ -7,7 +7,9 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 use B55\I55WebManager as I55WebManager;
-//use B55\I55WebManager\Forms\I55wmForms as I55wmForms;
+
+// TODO: Remove this
+require_once __DIR__ . '/../Resources/lib/utils.php';
 
 class I55WebManagerControllerProvider implements ControllerProviderInterface {
     public function connect(Application $app)
@@ -30,7 +32,7 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
         }
         else {
             return $app['twig']->render($template,  array(
-                'configs' => $i55wm->getConfigsNames(), // TODO REMOVE
+                'configs' => $i55wm->getConfigs(),
                 'has_configuration' => $i55wm->has_configuration(), // TODO REMOVE
                 'configurations' => $app['I55wm']->getConfigsNames(),
             ));
@@ -107,6 +109,69 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
         })->bind('i55wm-load-config');
 
 
+        // I3CONFIG:
+        // config.
+        $controllers->match('/i3config/{config_name}',
+            function (Request $request, $config_name) use ($app) {
+
+            $i55wm = $app['I55wm'];
+            $i55Form = new I55WebManager\Forms\I55wmForms($app['form.factory']);
+            $data = array();
+
+            if ($config_name != 'new') {
+                $i55Config = $i55wm->getConfigs($config_name);
+                $data['config_name'] = $i55Config->getName();
+                $data['config_nb_workspace'] = count($i55Config->getWorkspaces());
+                $data['exists'] = true;
+            }
+            else {
+                $data['exists'] = false;
+                $i55Config = $i55wm->createConfig();
+            }
+
+            $form = $i55Form->getAddForm($data);
+
+            if ('POST' === $request->getMethod()) {
+                $form->bind($request);
+
+                if ($form->isValid()) {
+                    $data = $form->getData();
+
+                    $i55wm->addConfig($data['config_name'], $data['config_nb_workspace']);
+                    $default_file = getYamlFilePathFromApp($app);
+                    $i55wm->save($default_file);
+
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'i55wm-i3config', array('id' => $data['config_name'])
+                        )
+                    );
+                }
+            }
+
+            return $app['twig']->render('i55wm.i3config/i55wm.config.html.twig', array(
+                'configurations' => $app['I55wm']->getConfigsNames(), //TODO try to optimize this
+                'form' => $form->createView(),
+                'exists' => $data['exists'],
+                'config' => $i55Config,
+            ));
+
+        })->value('config_name', 'new')
+            ->bind('i55wm-i3config');
+
+
+        // Workspace.
+        $app->match('/i3config/{config}/workspace/{workspace_name}',
+            function (Application $app, $config) {
+
+
+        })->convert('config', function ($config) use ($app) {
+                return $app['I55wm']->getConfigs($config);
+            })
+            ->value('workspace', 'new')
+            ->bind('i55wm-workspace');
+
         return $controllers;
     }
+
 }

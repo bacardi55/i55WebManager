@@ -17,10 +17,14 @@ class I55wmForms{
    * @return SfForm
    */
   public function getAddForm($data = array()) {
-    $form = $this->form_factory->createBuilder('form', $data)
-      ->add('config_name', 'text')
-      ->add('config_nb_workspace', 'integer')
-      ->getForm();
+    $form_builder = $this->form_factory->createBuilder('form', $data)
+      ->add('config_name', 'text');
+
+    if (!array_key_exists('exists', $data) || $data['exists'] !== true) {
+        $form_builder->add('config_nb_workspace', 'integer');
+    }
+
+    $form = $form_builder->getForm();
 
     return $form;
   }
