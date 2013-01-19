@@ -16,6 +16,9 @@ class I55Configuration {
     $this->default_workspaces = $workspaces;
   }
 
+    public function hasDefaultWorkspaces() {
+        return (count($this->default_workspaces));
+    }
   public function addDefaultWorkspace(I55Workspace $i55Workspace) {
     $this->default_workspaces[] = $i55Workspace;
   }

@@ -53,8 +53,8 @@ class I55WebManager {
     $this->configs = $configs;
   }
 
-  public function addConfig($config_name, $nb_workspaces = 0) {
-    $this->configs[] = new I55Config($config_name, $nb_workspaces);
+  public function addConfig($config) {
+    $this->configs[] = $config;
     $this->save();
   }
 
@@ -167,7 +167,7 @@ class I55WebManager {
   /**
    * Save method
    */
-  public function save($real_save = false) {
+  public function save() {
     $yaml = $this->generateYaml();
     $filename = $this->file;
 

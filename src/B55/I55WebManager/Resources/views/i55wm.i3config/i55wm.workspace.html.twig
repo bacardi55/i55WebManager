@@ -1,0 +1,32 @@
+{% extends "i55wm.layout.html.twig" %}
+
+{% block content %}
+    <h1>« {{ config.name|e}} » - « {{ workspace.name|e}} »</h1>
+
+    <div>
+        <form action="#" method="post">
+            {{ form_widget(form) }}
+            <input type="submit" name="submit" class="btn" />
+        </form>
+    </div>
+    <ul>
+        {% for container in workspace.containers %}
+            {% for client in container.clients %}
+                <li>
+                    <a href="">
+                        Modify client « {{ client.name|e }} »
+                    </a>
+                    - <a href="">Delete X</a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>No Client for this configuration</li>
+        {% endfor %}
+    </ul>
+
+    <p>
+        <a href="">Add a client</a>
+        <br/>
+        <a href="{{ path('i55wm-i3config', {'config_name': config.name}) }}">Return to workspace list</a>
+    </p>
+{% endblock %}

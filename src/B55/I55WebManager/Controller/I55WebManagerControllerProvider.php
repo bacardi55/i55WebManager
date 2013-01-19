@@ -137,13 +137,52 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
                 if ($form->isValid()) {
                     $data = $form->getData();
 
-                    $i55wm->addConfig($data['config_name'], $data['config_nb_workspace']);
-                    $default_file = getYamlFilePathFromApp($app);
-                    $i55wm->save($default_file);
+                    if (!array_key_exists('exists', $data) || $data['exists'] == false) {
+                        $i55Config->setName($data['config_name']);
+
+                        if (array_key_exists('use_default_workspace', $data)
+                              && count($data['use_default_workspace'])
+                              && in_array('y', $data['use_default_workspace'])) {
+
+                            if (!$i55wm->getConfiguration()->hasDefaultWorkspaces()) {
+                                $app['session']->setFlash(
+                                    'error',
+                                    'You don\'t have set your default workspaces. An empty config has been created instead'
+                                );
+                            }
+                            else {
+                                $app['session']->setFlash(
+                                    'success',
+                                    'Your default workspaces have been loaded'
+                                );
+                                $i55Config->setWorkspaces($i55wm->getConfiguration()->getDefaultWorkspaces());
+                            }
+                        }
+                        $i55wm->addConfig($i55Config);
+
+                        $app['session']->setFlash(
+                            'success',
+                            'Your config has been created'
+                        );
+                    }
+                    else {
+                        if ($i55wm->save()) {
+                            $app['session']->setFlash(
+                                'success',
+                                'Your config has been updated'
+                            );
+                        }
+                        else {
+                            $app['session']->setFlash(
+                                'error',
+                                'Your config has not been updated'
+                            );
+                        }
+                    }
 
                     return $app->redirect(
                         $app['url_generator']->generate(
-                            'i55wm-i3config', array('id' => $data['config_name'])
+                            'i55wm-i3config', array('config_name' => $data['config_name'])
                         )
                     );
                 }
@@ -159,16 +198,94 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
         })->value('config_name', 'new')
             ->bind('i55wm-i3config');
 
+        $controllers->match('/i3config/{config}/remove',
+            function (Application $app, $config) {
+
+            $i55wm = $app['I55wm'];
+            $i55Config = $i55wm->getConfigs($config);
+
+            if (is_object($i55Config)) {
+                $i55wm->removeConfig($config);
+                $app['session']->setflash(
+                    'success',
+                    'your configuration «' . $config . '» has been deleted'
+                );
+            }
+            else {
+                $app['session']->setflash(
+                    'error',
+                    'your configuration «' . $config . '» doesn\'t exist'
+                );
+            }
+
+            return $app->redirect(
+                $app['url_generator']->generate('i55WebManager')
+            );
+        })->bind('i55wm-i3config-delete');
 
         // Workspace.
         $app->match('/i3config/{config}/workspace/{workspace_name}',
-            function (Application $app, $config) {
+            function (Request $request, Application $app, $config, $workspace_name) {
+
+            $i55wm = $app['I55wm'];
+
+            $data = array();
+            if ($workspace_name == 'new') {
+                $i55Workspace = $i55wm->getConfigs($config)->createWorkspace();
+                $data['exists'] = false;
+            }
+            else {
+                $i55Workspace = $i55wm->getConfigs($config)->getWorkspaces($workspace_name);
+
+                if (is_object($i55Workspace)) {
+                    $data = array(
+                        'name' => $i55Workspace->getName(),
+                        'default_layout' => $i55Workspace->getDefaultLayout(),
+                        'exists' => true,
+                    );
+                }
+            }
+
+            $i55Form = new I55WebManager\Forms\I55wmForms($app['form.factory']);
+            $form = $i55Form->getWorkspaceForm($data, geti55Layouts());
+
+            if ('POST' === $request->getMethod()) {
+                $form->bind($request);
+                if ($form->isValid()) {
+                    $data = $form->getData();
+                    if ($data['exists'] == false) {
+                        $i55wm->getConfigs($config)->addWorkspace($i55wm->getConfigs($config)->createWorkspace($data['name']));
+                        $app['session']->setFlash(
+                          'success',
+                          'Workspace «' . $data['name'] . '» created'
+                        );
+                    }
+                    else {
+                        $i55Workspace->setName($data['name']);
+                        $i55Workspace->setDefaultLayout($data['default_layout']);
+                        $app['session']->setflash(
+                            'success',
+                            'Workspace «' . $data['name'] .'» modified'
+                        );
+                    }
+                    $i55wm->save();
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                            'i55wm-i3config', array('config_name' => $i55wm->getConfigs($config)->getName())
+                        )
+                    );
+                }
+            }
+
+            return $app['twig']->render('i55wm.i3config/i55wm.workspace.html.twig', array(
+                'configurations' => $app['I55wm']->getConfigsNames(), //TODO try to optimize this
+                'form' => $form->createView(),
+                'config' => $i55wm->getConfigs($config),
+                'workspace' => $i55Workspace,
+            ));
 
 
-        })->convert('config', function ($config) use ($app) {
-                return $app['I55wm']->getConfigs($config);
-            })
-            ->value('workspace', 'new')
+        })->value('workspace', 'new')
             ->bind('i55wm-workspace');
 
         return $controllers;

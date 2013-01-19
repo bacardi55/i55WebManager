@@ -21,7 +21,7 @@
                     <a href="{{ path('i55wm-i3config', {'config_name': config.name}) }}">
                         {{ config.name|e }}
                     </a>
-                    <a href="#">
+                    <a href="{{ path('i55wm-i3config-delete', {'config': config.name}) }}">
                         <button class="btn btn-danger">Delete</button>
                     </a>
                 </div>

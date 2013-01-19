@@ -32,6 +32,7 @@ class I55Config {
     $this->name = $name;
   }
 
+
   /* Workspaces */
   public function getWorkspaces($name = NULL) {
     $ret = $this->workspaces;
@@ -64,6 +65,10 @@ class I55Config {
     $this->workspaces = array_merge($this->workspaces);
   }
 
+  public function createWorkspace($workspace_name = 'new') {
+      return new I55Workspace($workspace_name);
+  }
+
   /* Scratchpads */
   public function addScratchpad(I55Client $i55Client) {
     $this->scratchpads[] = $i55Client;
@@ -89,6 +94,7 @@ class I55Config {
     }
     return $this->scratchpads;
   }
+
 
   /* Clients */
   public function removeClient($workspace_name, $client_name) {
