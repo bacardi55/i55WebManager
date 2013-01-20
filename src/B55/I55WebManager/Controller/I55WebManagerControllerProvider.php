@@ -137,9 +137,8 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
                 if ($form->isValid()) {
                     $data = $form->getData();
 
+                    $i55Config->setName($data['config_name']);
                     if (!array_key_exists('exists', $data) || $data['exists'] == false) {
-                        $i55Config->setName($data['config_name']);
-
                         if (array_key_exists('use_default_workspace', $data)
                               && count($data['use_default_workspace'])
                               && in_array('y', $data['use_default_workspace'])) {

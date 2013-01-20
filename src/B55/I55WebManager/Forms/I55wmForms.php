@@ -17,17 +17,24 @@ class I55wmForms{
    * @return SfForm
    */
   public function getAddForm($data = array()) {
-    $form = $this->form_factory->createBuilder('form', $data)
-        ->add('config_name', 'text')
-        ->add('use_default_workspace', 'choice', array(
-            'choices'  => array('y' => 'Yes'),
-            'label'    => 'Use default workspaces?',
-            'expanded' => true,
-            'multiple' => true
-        ))
-        ->getForm();
 
-    return $form;
+    $form_builder = $this->form_factory->createBuilder('form', $data)
+        ->add('config_name', 'text');
+
+    if (!array_key_exists('exists', $data) || $data['exists'] !== true ) {
+        $form_builder = $form_builder->add(
+            'use_default_workspace',
+            'choice',
+            array(
+                'choices'  => array('y' => 'Yes'),
+                'label'    => 'Use default workspaces?',
+                'expanded' => true,
+                'multiple' => true
+            )
+        );
+    }
+
+    return $form_builder->getForm();
   }
 
   /**

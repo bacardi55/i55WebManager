@@ -119,7 +119,7 @@ class I55Config {
     public function getNbTotalClients() {
         $total = 0;
         for ($i = 0, $nb = count($this->workspaces); $i < $nb; ++$i) {
-            $total += count($this->workspaces[$i]->getNbTotalClients());
+            $total += $this->workspaces[$i]->getNbTotalClients();
         }
         return $total;
     }
