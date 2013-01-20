@@ -69,6 +69,9 @@ class I55Config {
       return new I55Workspace($workspace_name);
   }
 
+    public function getNbWorkspaces() {
+        return count($this->workspaces);
+    }
   /* Scratchpads */
   public function addScratchpad(I55Client $i55Client) {
     $this->scratchpads[] = $i55Client;
@@ -112,6 +115,15 @@ class I55Config {
       }
     }
   }
+
+    public function getNbTotalClients() {
+        $total = 0;
+        for ($i = 0, $nb = count($this->workspaces); $i < $nb; ++$i) {
+            $total += count($this->workspaces[$i]->getNbTotalClients());
+        }
+        return $total;
+    }
+
 
   /**
    * Save methods

@@ -110,6 +110,14 @@ class I55Workspace {
     return substr($ret, 0, -2);
   }
 
+    public function getNbTotalClients() {
+        $total = 0;
+        for ($i = 0, $nb = count($this->containers); $i < $nb; ++$i) {
+            $total += count($this->containers[$i]->getClients());
+        }
+        return $total;
+    }
+
   /**
    * Save methods
    */

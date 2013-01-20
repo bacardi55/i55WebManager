@@ -18,23 +18,34 @@
         <div class="row">
             {% for config in configs %}
                 <div class="span6">
-                    <a href="{{ path('i55wm-i3config', {'config_name': config.name}) }}">
-                        {{ config.name|e }}
-                    </a>
-                    <a href="{{ path('i55wm-i3config-delete', {'config': config.name}) }}">
-                        <button class="btn btn-danger">Delete</button>
-                    </a>
+                    <h2>{{ config.name|e }}</h2>
+                        <div>
+                            <div>
+                                {{ config.nbWorkspaces }} workspaces.
+                                {{ config.nbTotalClients }} clients total.
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn" href="{{ path('i55wm-i3config', {'config_name': config.name}) }}">
+                                    <i class="icon-edit"></i>
+                                </a>
+                                <a class="btn" href="{{ path('i55wm-i3config-delete', {'config': config.name}) }}">
+                                    <i class="icon-trash"></i>
+                                </a>
+                            </div>
+                        </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
 
-    <p>
-        <a href="{{ path('i55wm-i3config') }}">
-            <button class="btn btn-success">Create a new configuration</button>
-        </a>
-    </p>
-
+    <div>
+        <p>
+            <br />
+            <a href="{{ path('i55wm-i3config') }}">
+                <button class="btn btn-success">Create a new configuration</button>
+            </a>
+        </p>
+    </div>
     {% if has_configuration == true %}
 
         <p><a href="{{ path('i55wm-configuration') }}">
