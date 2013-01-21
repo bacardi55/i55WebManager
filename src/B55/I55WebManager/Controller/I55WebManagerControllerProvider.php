@@ -287,6 +287,32 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
         })->value('workspace', 'new')
             ->bind('i55wm-workspace');
 
+        $app->match('/i3config/{config}/workspace/{workspace_name}/remove',
+            function (Application $app, $config, $workspace_name) {
+
+            $i55wm = $app['I55wm'];
+            $i55Workspace = $i55wm->getConfigs($config)->getWorkspaces($workspace_name);
+
+            if (is_object($i55Workspace)) {
+                $i55wm->getConfig($config)->removeWorkspace($workspace_name);
+                $app['session']->setflash(
+                    'success',
+                    'your workspace«' . $workspace_name . '» has been deleted'
+                );
+            }
+            else {
+                $app['session']->setflash(
+                    'error',
+                    'your workspace «' . $workspace_name . '» doesn\'t exist'
+                );
+            }
+
+            return $app->redirect(
+                $app['url_generator']->generate('i55WebManager')
+            );
+        })->bind('i55wm-workspace-delete');
+
+
         return $controllers;
     }
 
