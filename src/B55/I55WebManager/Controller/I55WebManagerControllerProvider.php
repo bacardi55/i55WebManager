@@ -253,7 +253,9 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
                 if ($form->isValid()) {
                     $data = $form->getData();
                     if ($data['exists'] == false) {
-                        $i55wm->getConfigs($config)->addWorkspace($i55wm->getConfigs($config)->createWorkspace($data['name']));
+                        $i55Workspace = $i55wm->getConfigs($config)->createWorkspace($data['name']);
+                        $i55Workspace->setDefaultLayout($data['default_layout']);
+                        $i55wm->getConfigs($config)->addWorkspace($i55Workspace);
                         $app['session']->setFlash(
                           'success',
                           'Workspace «' . $data['name'] . '» created'
@@ -294,7 +296,8 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
             $i55Workspace = $i55wm->getConfigs($config)->getWorkspaces($workspace_name);
 
             if (is_object($i55Workspace)) {
-                $i55wm->getConfig($config)->removeWorkspace($workspace_name);
+                $i55wm->getConfigs($config)->removeWorkspace($workspace_name);
+                $i55wm->save();
                 $app['session']->setflash(
                     'success',
                     'your workspace«' . $workspace_name . '» has been deleted'
@@ -308,7 +311,10 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
             }
 
             return $app->redirect(
-                $app['url_generator']->generate('i55WebManager')
+                $app['url_generator']->generate(
+                  'i55wm-i3config',
+                  array('config_name' => $config)
+                )
             );
         })->bind('i55wm-workspace-delete');
 
