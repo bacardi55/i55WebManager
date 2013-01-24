@@ -38,9 +38,9 @@ class I55Config {
     $ret = $this->workspaces;
 
     if ($name != NULL) {
-      foreach ($this->workspaces as $workspace) {
-        if (strcmp($workspace->getName(), $name) === 0) {
-          return $workspace;
+      for ($i = 0, $nb = count($this->workspaces); $i < $nb; ++$i) {
+        if (strcmp($this->workspaces[$i]->getName(), $name) === 0) {
+          return $this->workspaces[$i];
         }
       }
     }

@@ -1,0 +1,17 @@
+{% extends "i55wm.layout.html.twig" %}
+
+{% block content %}
+    <h1>« {{ config.name|e}} » - « {{ workspace.name|e}} » - « {{ client.name|e }} »</h1>
+
+    <div>
+        <form action="#" method="post">
+            {{ form_widget(form) }}
+            <input type="submit" name="submit" class="btn" />
+        </form>
+    </div>
+    <ul>
+    <p><a href="{{ path('i55wm-workspace',
+          {'config': config.name, 'workspace_name': workspace.name}) }}">
+        <button class="btn">Back to configuration page</button>
+    </a></p>
+{% endblock %}

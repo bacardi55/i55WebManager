@@ -57,6 +57,7 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
 
         // Configuration parse file.
         $controllers->match('/configuration/load', function (Request $request, Application $app) {
+            //TODO: add load file from files
             $form_view = $i55ParsedConfig = $upload = $config_file = false;
 
             $i55wm = $app['I55wm'];
@@ -386,6 +387,26 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
         $app->match('/i3config/{config}/workspace/{workspace}/client/{client}/remove',
             function (Application $app, $config, $workspace, $client) {
 
+            $i55wm = $app['I55wm'];
+            $i55Client = $i55wm->getConfigs($config)
+                ->getWorkspaces($workspace)
+                ->getClient($client);
+
+            if (is_object($i55Client)) {
+                $i55wm->getConfigs($config)->getWorkspaces($workspace)
+                    ->removeClient($client);
+                $i55wm->save();
+                $app['session']->setflash(
+                    'success',
+                    'your client «' . $client . '» has been removed'
+                );
+            }
+            else {
+                $app['session']->setflash(
+                    'error',
+                    'your client «' . $client . '» doesn\'t exist'
+                );
+            }
             //TODO
             return $app->redirect($app['url_generator']->generate(
                 'i55wm-workspace',
