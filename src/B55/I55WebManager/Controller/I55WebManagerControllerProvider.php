@@ -286,7 +286,7 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
             ));
 
 
-        })->value('workspace', 'new')
+        })->value('workspace_name', 'new')
             ->bind('i55wm-workspace');
 
         $app->match('/i3config/{config}/workspace/{workspace_name}/remove',
@@ -318,6 +318,80 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
             );
         })->bind('i55wm-workspace-delete');
 
+
+        $app->match('/i3config/{config}/workspace/{workspace}/client/{client}',
+            function (Request $request, Application $app, $config, $workspace, $client) {
+
+            $i55wm = $app['I55wm'];
+            $data = array();
+            if ($client == 'new') {
+              $i55Client = $i55wm->getConfigs($config)
+                  ->getWorkspaces($workspace)->createClient();
+                $data['exists'] = false;
+            }
+            else {
+                $i55Client = $i55wm->getConfigs($config)
+                    ->getWorkspaces($workspace)->getClient($client);
+
+                if (is_object($i55Client)) {
+                    $data = array(
+                        'name' => $i55Client->getName(),
+                        'command' => $i55Client->getCommand(),
+                        'arguments' => $i55Client->getArguments(),
+                        'exists' => true,
+                    );
+                }
+            }
+
+            $i55Form = new I55WebManager\Forms\I55wmForms($app['form.factory']);
+            $form = $i55Form->getClientForm($data);
+
+            if ('POST' === $request->getMethod()) {
+                $form->bind($request);
+                if ($form->isValid()) {
+                    $data = $form->getData();
+                    $i55Client->setName($data['name']);
+                    $i55Client->setCommand($data['command']);
+                    $i55Client->setArguments($data['arguments']);
+                    if ($data['exists'] == false) {
+                        $i55wm->getConfigs($config)->getWorkspaces($workspace)
+                            ->addClient($i55Client);
+                    }
+                    $i55wm->save();
+
+                    $app['session']->setFlash(
+                      'success',
+                      'Client «' . $data['name'] . '» added to your workspace «'
+                          . $workspace .'»'
+                    );
+
+                    return $app->redirect(
+                        $app['url_generator']->generate(
+                          'i55wm-workspace',
+                          array('config' => $config, 'workspace_name' => $workspace)
+                        )
+                    );
+                }
+            }
+
+            return $app['twig']->render('i55wm.i3config/i55wm.client.html.twig', array(
+                'configurations' => $app['I55wm']->getConfigsNames(), //TODO try to optimize this
+                'form' => $form->createView(),
+                'config' => $i55wm->getConfigs($config),
+                'workspace' => $i55wm->getConfigs($config)->getWorkspaces($workspace),
+                'client' => $i55Client
+            ));
+        })->bind('i55wm-client')->value('client', 'new');
+
+        $app->match('/i3config/{config}/workspace/{workspace}/client/{client}/remove',
+            function (Application $app, $config, $workspace, $client) {
+
+            //TODO
+            return $app->redirect($app['url_generator']->generate(
+                'i55wm-workspace',
+                array('config' =>  $config, 'workspace_name' => $workspace)
+            ));
+        })->bind('i55wm-client-remove');
 
         return $controllers;
     }

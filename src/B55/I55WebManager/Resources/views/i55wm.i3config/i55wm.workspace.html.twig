@@ -10,23 +10,36 @@
         </form>
     </div>
     <ul>
-        {% for container in workspace.containers %}
-            {% for client in container.clients %}
-                <li>
-                    <a href="">
-                        Modify client « {{ client.name|e }} »
-                    </a>
-                    - <a href="">Delete X</a>
-                </li>
+        <div class="row">
+            {% for container in workspace.containers %}
+                <div class="span6">
+                    <h3>Container - Layout : « {{ container.layout|e }} »</h3>
+                    {% for client in container.clients %}
+                        <div class="button-group">
+                            {{ client.name|e }}
+                            <a href="{{ path('i55wm-client',
+                                {'config': config.name,
+                                 'workspace': workspace.name,
+                                 'client': client.name
+                                }) }}">
+                                <i class="icon-edit"></i>
+                            </a>
+                            <a href="{{ path('i55wm-client-remove',
+                                {'config': config.name,
+                                 'workspace': workspace.name,
+                                 'client': client.name
+                                }) }}">
+                                <i class="icon-trash"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
             {% endfor %}
-        {% else %}
-            <li>No Client for this configuration</li>
-        {% endfor %}
+        </div>
     </ul>
 
+    {% if workspace.name != "new" %}
     <p>
-        <a href="">Add a client</a>
-        <br/>
-        <a href="{{ path('i55wm-i3config', {'config_name': config.name}) }}">Return to workspace list</a>
+        <a href="{{ path('i55wm-client', {'config': config.name, 'workspace': workspace.name}) }}"><button class="btn btn-primary">Add a client</button></a>
     </p>
+    {% endif %}
 {% endblock %}

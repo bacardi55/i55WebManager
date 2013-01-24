@@ -46,13 +46,13 @@ class I55wmForms{
    * @return SfForm
    */
   public function getWorkspaceForm($data = array(), $layouts) {
-    $form = $this->form_factory->createBuilder('form', $data)
-        ->add('name', 'text')
-        ->add('default_layout', 'choice', array('choices' => $layouts))
-        ->add('exists', 'hidden')
-        ->getForm();
+      $form = $this->form_factory->createBuilder('form', $data)
+          ->add('name', 'text')
+          ->add('default_layout', 'choice', array('choices' => $layouts))
+          ->add('exists', 'hidden')
+          ->getForm();
 
-    return $form;
+      return $form;
   }
 
 
@@ -65,14 +65,14 @@ class I55wmForms{
    * @return SfForm
    */
   public function getClientForm($data = array()) {
-    $form = $this->form_factory->createBuilder('form', $data)
-      ->add('is_new', 'hidden')
-      ->add('name', 'text')
-      ->add('command', 'text')
-      ->add('arguments', 'text', array('required' => false))
-      ->getForm();
+      $form = $this->form_factory->createBuilder('form', $data)
+          ->add('is_new', 'hidden')
+          ->add('name', 'text')
+          ->add('command', 'text')
+          ->add('arguments', 'text', array('required' => false))
+          ->getForm();
 
-    return $form;
+      return $form;
   }
 
   /**

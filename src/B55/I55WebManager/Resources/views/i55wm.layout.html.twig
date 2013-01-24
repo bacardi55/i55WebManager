@@ -30,16 +30,18 @@
                     <ul class="nav">
                         <li {% if 'global_configuration' == active %}class="active"{% endif %}><a href="{{ path('i55wm-configuration') }}">{{ 'Global Configuration'|trans }}</a></li>
                         <li class="dropdown{% if 'i3_configuration' == active %} active{% endif %}">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                {{ 'i3 Configurations'|trans }} <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                {% for configuration in configurations %}
-                                  <li><a href="{{ path('i55wm-i3config', {'config_name': configuration}) }}">{{ configuration|trans }}</a></li>
-                                {% endfor %}
-                                <li class="divider"></li>
-                                <li><a href="{{ path('i55wm-i3config') }}">New configuration</a></li>
-                            </ul>
+                            <div class="btn-group">
+                                <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
+                                    {{ 'i3 Configurations'|trans }} <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for configuration in configurations %}
+                                      <li><a href="{{ path('i55wm-i3config', {'config_name': configuration}) }}">{{ configuration|trans }}</a></li>
+                                    {% endfor %}
+                                    <li class="divider"></li>
+                                    <li><a href="{{ path('i55wm-i3config') }}">New configuration</a></li>
+                                </ul>
+                            </div>
                         </li>
                     </ul>
                 </div><!--/.nav-collapse -->

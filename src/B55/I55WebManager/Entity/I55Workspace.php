@@ -1,7 +1,7 @@
 <?php
 namespace B55\I55WebManager\Entity;
 
-use B55\I55WebManager\Entity\I55Client as I55Client;
+use B55\I55WebManager\Entity\I55Workspace as I55Workspace;
 
 require_once __DIR__ . '/../Resources/lib/utils.php';
 
@@ -66,30 +66,38 @@ class I55Workspace {
     }
   }
 
-  public function addClient(I55Client $i55Client, $container_name = NULL) {
-    $nb_containers = count($this->getContainers());
-    // This workspace is a virgin, don't need to do more.
-    if (!$nb_containers) {
-      $i55Container = new I55Container();
-      $i55Container->addClient($i55Client);
-      $this->addContainer($i55Container);
-      return;
+    public function createContainer() {
+        return new I55Container($this->defaultLayout);
     }
-    else {
-      if (!$container_name) {
-        $container = current($this->containers);
-        // TODO: Check container as child later.
-        $container->addClient($i55Client);
-        return;
-      }
-      foreach ($workspace->getContainers() as $container) {
-        if (strcmp($container->getName(), $container_name) === 0) {
-          $container->addClient($i55Client);
-          return;
+    public function createClient() {
+      $container = new I55Container($this->defaultLayout);
+      return $container->createClient();
+    }
+
+    public function addClient(I55Client $i55Client, $container_name = NULL) {
+        $nb_containers = count($this->getContainers());
+        // This workspace is a virgin, don't need to do more.
+        if (!$nb_containers) {
+            $i55Container = new I55Container($this->defaultLayout);
+            $i55Container->addClient($i55Client);
+            $this->addContainer($i55Container);
+            return;
         }
-      }
+        else {
+            if (!$container_name) {
+                $container = current($this->containers);
+                // TODO: Check container as child later.
+                $container->addClient($i55Client);
+                return;
+            }
+            foreach ($workspace->getContainers() as $container) {
+                if (strcmp($container->getName(), $container_name) === 0) {
+                    $container->addClient($i55Client);
+                    return;
+                }
+            }
+        }
     }
-  }
 
   public function getNumberOfClients() {
     $nb = 0;

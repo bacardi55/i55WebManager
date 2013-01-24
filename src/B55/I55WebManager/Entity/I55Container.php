@@ -32,6 +32,9 @@ class I55Container {
     $this->clients = $clients;
   }
 
+    public function createClient() {
+        return new I55Client('new');
+    }
   public function getContainers() {
     return $this->containers;
   }
@@ -45,7 +48,7 @@ class I55Container {
   }
 
   public function setLayout($layout) {
-    $this->layout = $clients;
+    $this->layout = $layout;
   }
 
   public function save() {
