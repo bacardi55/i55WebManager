@@ -4,10 +4,7 @@
     <h1>« {{ config.name|e}} » - « {{ workspace.name|e}} » - « {{ client.name|e }} »</h1>
 
     <div>
-        <form action="#" method="post">
-            {{ form_widget(form) }}
-            <input type="submit" name="submit" class="btn" />
-        </form>
+        {% include 'i55wm.form.html.twig' %}
     </div>
     <ul>
     <p><a href="{{ path('i55wm-workspace',

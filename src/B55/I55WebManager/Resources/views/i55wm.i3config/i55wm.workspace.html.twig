@@ -4,6 +4,7 @@
     <h1>« {{ config.name|e}} » - « {{ workspace.name|e}} »</h1>
 
     <div>
+        {% include 'i55wm.form.html.twig' %}
         <form action="#" method="post">
             {{ form_widget(form) }}
             <input type="submit" name="submit" class="btn" />
