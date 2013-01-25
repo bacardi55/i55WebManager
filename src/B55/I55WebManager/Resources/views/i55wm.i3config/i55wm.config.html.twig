@@ -14,33 +14,35 @@
         </form>
     </div>
 
-    <div class="row">
-        <h2>Your workspaces for this config</h2>
-        {% for workspace in config.workspaces %}
-            <div class="span6">
-                <h3>«{{ workspace.name|e }}»</h3>
-                {% if workspace.getNbTotalClients %}
-                    {{ workspace.getNbTotalClients() }} Clients ({{ workspace.getClientsNames }})
-                {% else %}
-                    No client
-                {% endif %}
-                <div class="btn-group">
-                    <a href="{{ path('i55wm-workspace', {'config': config.name, 'workspace_name': workspace.name}) }}" class="btn">
-                        <i class="icon-edit"></i>
-                    </a>
-                    <a href="{{ path('i55wm-workspace-delete', {'config': config.name, 'workspace_name': workspace.name}) }}" class="btn">
-                        <i class="icon-trash"></i>
-                    </a>
-                </div>
-            </div>
-        {% else %}
-            <p>No workspace found for this configuration</p>
-        {% endfor %}
-    </div>
-    <div>
-        <br/>
-        <a href="{{ path('i55wm-workspace', {'config': config.name, 'workspace_name': 'new'}) }}">
-            <button class="btn btn-primary">Add a workspace</button>
-        </a>
-    </div>
+    {% if exists == true %}
+      <div class="row">
+          <h2>Your workspaces for this config</h2>
+          {% for workspace in config.workspaces %}
+              <div class="span6">
+                  <h3>«{{ workspace.name|e }}»</h3>
+                  {% if workspace.getNbTotalClients %}
+                      {{ workspace.getNbTotalClients() }} Clients ({{ workspace.getClientsNames }})
+                  {% else %}
+                      No client
+                  {% endif %}
+                  <div class="btn-group">
+                      <a href="{{ path('i55wm-workspace', {'config': config.name, 'workspace_name': workspace.name}) }}" class="btn">
+                          <i class="icon-edit"></i>
+                      </a>
+                      <a href="{{ path('i55wm-workspace-delete', {'config': config.name, 'workspace_name': workspace.name}) }}" class="btn">
+                          <i class="icon-trash"></i>
+                      </a>
+                  </div>
+              </div>
+          {% else %}
+              <p>No workspace found for this configuration</p>
+          {% endfor %}
+          </div>
+          <div>
+              <br/>
+              <a href="{{ path('i55wm-workspace', {'config': config.name, 'workspace_name': 'new'}) }}">
+                  <button class="btn btn-primary">Add a workspace</button>
+              </a>
+          </div>
+    {% endif %}
 {% endblock %}
