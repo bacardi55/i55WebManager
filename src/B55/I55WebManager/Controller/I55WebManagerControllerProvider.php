@@ -19,24 +19,24 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
 
         // INDEX:
         $controllers->match('/', function (Application $app) {
-        $i55wm = $app['I55wm'];
+            $i55wm = $app['I55wm'];
 
-        $template = 'i55wm.index.html.twig';
+            $template = 'i55wm.index.html.twig';
 
-        if ($app['I55wm']->is_new() === true) {
-            return $app['twig']->render($template,  array(
-                'configs' => null,
-                'has_configuration' => false,
-                'workspaces' => array(),
-            ));
-        }
-        else {
-            return $app['twig']->render($template,  array(
-                'configs' => $i55wm->getConfigs(),
-                'has_configuration' => $i55wm->has_configuration(), // TODO REMOVE
-                'configurations' => $app['I55wm']->getConfigsNames(),
-            ));
-        }
+            if ($app['I55wm']->is_new() === true) {
+                return $app['twig']->render($template,  array(
+                    'configs' => null,
+                    'has_configuration' => false,
+                    'workspaces' => array(),
+                ));
+            }
+            else {
+                return $app['twig']->render($template,  array(
+                    'configs' => $i55wm->getConfigs(),
+                    'has_configuration' => $i55wm->has_configuration(), // TODO REMOVE
+                    'configurations' => $app['I55wm']->getConfigsNames(),
+                ));
+            }
             return $app['twig']->render('i55wm.index.html.twig', array());
         })->bind('i55WebManager');
 
