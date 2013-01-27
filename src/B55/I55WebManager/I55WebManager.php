@@ -32,6 +32,17 @@ class I55WebManager {
     }
   }
 
+  public function setFile($file, $load = false) {
+      $this->file = $file;
+      if (file_exists($file)) {
+        $this->plain_config = Yaml::parse($file);
+      }
+
+      if ($load) {
+          $this->load();
+      }
+  }
+
   /* Configs */
   public function getConfigs($config_name = NULL) {
     if (!$this->is_loaded) {
@@ -259,11 +270,18 @@ class I55WebManager {
   }
 
   /**
+   * Dump method
+   */
+  public function dump($name, i3Msg\i3MsgInterface $i3Msg) {
+    $config = $this->getConfigs($name);
+    return $i3Msg->dump($config);
+  }
+  /**
    * Run method
    */
   public function run($name, i3Msg\i3MsgInterface $i3Msg, $file) {
     $config = $this->getConfigs($name);
-    return $i3Msg->run($config, $file);
+    $i3Msg->run($config, $file);
   }
 
 

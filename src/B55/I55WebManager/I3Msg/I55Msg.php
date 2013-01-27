@@ -6,33 +6,13 @@ use B55\I55WebManager\Entity\I55Workspace;
 use B55\I55WebManager\Entity\I55Client;
 
 class I55Msg implements I3MsgInterface {
-    public function run($i55Config, $file = '') {
-        $output = '#!/bin/bash' . "\n\n";
-        $workspaces = $i55Config->getWorkspaces();
+    public function dump($i55Config) {
+        return $this->_run($i55Config);
+    }
 
-        foreach ($workspaces as $wk_id => $workspace) {
-            $output .= $this->goto_workspace($workspace);
-
-            if ($workspace->getDefaultLayout() != 'default') {
-                $output .= $this->set_layout($workspace->getDefaultLayout());
-            }
-
-            $containers = $workspace->getContainers();
-            foreach ($containers as $ct_id => $container) {
-                $clients = $container->getClients();
-                foreach ($clients as $client) {
-                    $output .= $this->open_client($client);
-                }
-            }
-        }
-        $scratchpads = $i55Config->getScratchpads();
-        foreach ($scratchpads as $sc_id => $scratchpad) {
-            $output .= $this->open_scratchpad($scratchpad);
-        }
-
-        $this->write_bash_script($output, $file);
-
-        return $output;
+    public function run($i55Config, $file) {
+        $script = $this->_run($i55Config, true);
+        return $this->write_bash_script($script, $file);
     }
 
     public function goto_workspace(I55Workspace $i55Workspace) {
@@ -86,5 +66,32 @@ class I55Msg implements I3MsgInterface {
         else {
             return true;
         }
+    }
+
+    protected function _run($i55Config) {
+        $output = '#!/bin/bash' . "\n\n";
+        $workspaces = $i55Config->getWorkspaces();
+
+        foreach ($workspaces as $wk_id => $workspace) {
+            $output .= $this->goto_workspace($workspace);
+
+            if ($workspace->getDefaultLayout() != 'default') {
+                $output .= $this->set_layout($workspace->getDefaultLayout());
+            }
+
+            $containers = $workspace->getContainers();
+            foreach ($containers as $ct_id => $container) {
+                $clients = $container->getClients();
+                foreach ($clients as $client) {
+                    $output .= $this->open_client($client);
+                }
+            }
+        }
+        $scratchpads = $i55Config->getScratchpads();
+        foreach ($scratchpads as $sc_id => $scratchpad) {
+            $output .= $this->open_scratchpad($scratchpad);
+        }
+
+        return $output;
     }
 }

@@ -11,7 +11,9 @@ $console = new Application('i55 Cli Manager', '0.1');
 $console
     ->register('i55Cli:run')
     ->setDefinition(array(
-        new InputOption('debug', '', InputOption::VALUE_NONE, 'Debug mode'),
+        new InputOption('dump', '', InputOption::VALUE_NONE, 'Print the bash script in the console directly'),
+        new InputOption('config_path', '', InputOption::VALUE_OPTIONAL, 'Path to your yaml config file'),
+        new InputOption('export_path', '', InputOption::VALUE_OPTIONAL, 'Where to write the final bash script'),
     ))
     ->addArgument(
         'config_name',
@@ -35,9 +37,21 @@ $console
         }
 
         if (in_array($config_name, $i55wm->getConfigsNames())) {
-            $script = $i55wm->run($config_name, $I3Msg, $app['I3Msg']['file']);
-            if ($input->getOption('debug')) {
+            $config_path = $input->getOption('config_path');
+            if ($config_path && is_readable($config_path)) {
+                $i55wm->setFile($config_path, true);
+            }
+            $export_path = $input->getOption('export_path');
+            if (!$export_path) {
+                $export_path = $app['I3Msg']['file'];
+            }
+
+            if ($input->getOption('dump')) {
+                $script = $i55wm->dump($config_name, $I3Msg);
                 $output->writeln($script);
+            }
+            else {
+                $script = $i55wm->run($config_name, $I3Msg, $export_path);
             }
         }
         else {
