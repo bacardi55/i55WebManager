@@ -164,6 +164,8 @@ class I55WebManager {
     return (count($this->configuration));
   }
 
+
+
   /**
    * Save method
    */
@@ -259,29 +261,9 @@ class I55WebManager {
   /**
    * Run method
    */
-  public function run($name, i3Msg\i3MsgInterface $i3Msg) {
+  public function run($name, i3Msg\i3MsgInterface $i3Msg, $file) {
     $config = $this->getConfigs($name);
-
-    $workspaces = $config->getWorkspaces();
-    foreach ($workspaces as $wk_id => $workspace) {
-      $i3Msg->goto_workspace($workspace);
-
-      if ($workspace->getDefaultLayout() != 'default') {
-        $i3Msg->set_layout($workspace->getDefaultLayout());
-      }
-
-      $containers = $workspace->getContainers();
-      foreach ($containers as $ct_id => $container) {
-        $clients = $container->getClients();
-        foreach ($clients as $client) {
-          $i3Msg->open_client($client);
-        }
-      }
-    }
-    $scratchpads = $config->getScratchpads();
-    foreach ($scratchpads as $sc_id => $scratchpad) {
-      $i3Msg->open_scratchpad($scratchpad);
-    }
+    return $i3Msg->run($config, $file);
   }
 
 

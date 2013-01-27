@@ -91,9 +91,6 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
     ));
 }
 
-//TODO: Remove when it's safe.
-$app->register(new Silex\Provider\DoctrineServiceProvider());
-
 // Register I55WmServiceProvider.
 $app->register(new B55\I55WebManager\Provider\I55wmServiceProvider());
 

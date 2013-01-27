@@ -39,4 +39,9 @@ $app['i55WebManager'] = array(
   )
 );
 
+$app['I3Msg'] = array(
+  'class' => 'B55\I55WebManager\I3Msg\I55Msg',
+  'file' => __DIR__ . '/../../src/B55/I55WebManager/Resources/i55CliScript.sh'
+);
+
 $app['i55_config_file'] = __DIR__ . '/../../src/B55/Resources/config';
