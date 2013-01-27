@@ -5,6 +5,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use B55\I55WebManager as I55WebManager;
 
@@ -407,14 +408,36 @@ class I55WebManagerControllerProvider implements ControllerProviderInterface {
                     'your client «' . $client . '» doesn\'t exist'
                 );
             }
-            //TODO
             return $app->redirect($app['url_generator']->generate(
                 'i55wm-workspace',
                 array('config' =>  $config, 'workspace_name' => $workspace)
             ));
         })->bind('i55wm-client-remove');
 
+
+        $app->match('/download', function (Request $request, Application $app) {
+            $link = '';
+
+            if ('GET' === $request->getMethod() && $request->query->get('download') == 1) {
+                $i55wm = $app['I55wm'];
+                $yaml = $i55wm->generateYaml();
+
+                return new Response(
+                    $yaml,
+                    200,
+                    array('Content-Type' => 'text/x-yaml',
+                    'Content-Disposition' => 'attachment; filename="i3Config.yaml"'
+                    )
+                );
+            }
+
+            return $app['twig']->render('i55wm.download.html.twig', array(
+                'configurations' => $app['I55wm']->getConfigsNames(), //TODO try to optimize this
+                'link' => $link
+            ));
+        })->bind('i55wm-download');
+
+
         return $controllers;
     }
-
 }

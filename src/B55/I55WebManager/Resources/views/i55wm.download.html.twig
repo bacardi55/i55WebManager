@@ -1,0 +1,14 @@
+{% extends 'i55wm.layout.html.twig' %}
+{% set active = 'download' %}
+
+{% block content %}
+    <h1>Download your configuration</h1>
+    <p>
+        This let you download the i3Config.yml file to use it with another instance of i55wm or with the phar file (coming soon).
+    </p>
+    <p>
+        <a href="{{ path('i55wm-download', {'download': 1}) }}">
+            <button class="btn btn-primary">Download</button>
+        </a>
+    </p>
+{% endblock %}

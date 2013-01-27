@@ -22,26 +22,29 @@
 <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
     {% set active = active|default(null) %}
-    <div class="navbar navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
                 <a class="brand" href="{{ path('i55WebManager') }}">{{ 'i55WebManager'|trans }}</a>
                 <div class="nav-collapse">
                     <ul class="nav">
                         <li {% if 'global_configuration' == active %}class="active"{% endif %}><a href="{{ path('i55wm-configuration') }}">{{ 'Global Configuration'|trans }}</a></li>
+                        <li class="divider-vertical"></li>
                         <li class="dropdown{% if 'i3_configuration' == active %} active{% endif %}">
-                            <div class="btn-group">
-                                <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
-                                    {{ 'i3 Configurations'|trans }} <b class="caret"></b>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    {% for configuration in configurations %}
-                                      <li><a href="{{ path('i55wm-i3config', {'config_name': configuration}) }}">{{ configuration|trans }}</a></li>
-                                    {% endfor %}
-                                    <li class="divider"></li>
-                                    <li><a href="{{ path('i55wm-i3config') }}">New configuration</a></li>
-                                </ul>
-                            </div>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                {{ 'i3 Configuration'|trans }} <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for configuration in configurations %}
+                                  <li><a href="{{ path('i55wm-i3config', {'config_name': configuration}) }}">{{ configuration|trans }}</a></li>
+                                {% endfor %}
+                                <li class="divider"></li>
+                                <li><a href="{{ path('i55wm-i3config') }}">New configuration</a></li>
+                            </ul>
+                        </li>
+                        <li class="divider-vertical"></li>
+                        <li class="{% if 'i3_configuration' == active %} active{% endif %}">
+                            <a href="{{ path('i55wm-download') }}">Download your config</a>
                         </li>
                     </ul>
                 </div><!--/.nav-collapse -->
