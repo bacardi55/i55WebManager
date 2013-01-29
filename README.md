@@ -3,9 +3,9 @@ i3WebManager
 
 Summary
 ----
-i3WebManager has a simple purpose. Help you start your day more quickly by starting all the app you need.
+i55WebManager has a simple purpose. Help you start your day more quickly by starting all the app you need.
 
-Purpose of i3WebManager
+Purpose of i55WebManager
 ----
 Have you ever start your laptop and thinking about all the app you need to open ?
 I open the same apps every day at work and put my clients in order in all my workspace at the start of my day (I don't hibernate a lot because I need to boot windows to play ^^').
@@ -29,7 +29,7 @@ Install
 ----
 To install, just do :
 ```bash
-git clone https://github.com/bacardi55/i3WebManager/ && cd i3WebManager && git checkout 0.3.1-alpha
+git clone https://github.com/bacardi55/i55WebManager/ && cd i55WebManager && git checkout 0.3.1-alpha
 curl -s http://getcomposer.org/installer | php
 php composer.phar install
 ```
@@ -39,7 +39,7 @@ Change the permissions to let the app create/modify a file in
 src/b55/Resources/i3Config.yml
 ```
 
-After creating your config file, you need to launch to i3CliManager. This console will launch your app in your workspace.
+After creating your config file, you need to launch to i55CliManager. This console will launch your app in your workspace.
 To launch i3CliManager,
 ```
 php console i3CliManager:start [config_name]
