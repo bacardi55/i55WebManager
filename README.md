@@ -2,11 +2,11 @@ i3WebManager
 ============
 
 Summary
-=======
+----
 i3WebManager has a simple purpose. Help you start your day more quickly by starting all the app you need.
 
 Purpose of i3WebManager
-=======================
+----
 Have you ever start your laptop and thinking about all the app you need to open ?
 I open the same apps every day at work and put my clients in order in all my workspace at the start of my day (I don't hibernate a lot because I need to boot windows to play ^^').
 Even if I do it all thanks to the keybinds, it's boring me to do it every day.
@@ -26,7 +26,7 @@ This application will be able to handle all layouts and {h,v}split in the future
 
 
 Install
-=======
+----
 To install, just do :
 ```bash
 git clone https://github.com/bacardi55/i3WebManager/ && cd i3WebManager && git checkout 0.3.1-alpha
@@ -47,29 +47,10 @@ php console i3CliManager:start [config_name]
 with [config_name] the name of the config you want to launch.
 
 Current State
-=============
-**Tag 0.3.1-alpha**: (**Don't use the 0.3-alpha, there is a fatal error)
-
-New feature: Default layout per workspace.
-Thanks to this, you can choose a layout for your workspace. When selecting a layout
-the app will make sure that the choosen layout will be set for the workspace.
-(You can not create split or layout in layout yet).
-
-**Tag 0.2-alpha**:
-
-You can now install the app, run it and create a new configuration from scratch.
-For now, you can only add client to workspace. You can't do split or layout for now, but you'll be able to one day…
-Plus, the console is also ready. So you can create your config in your web browser, and then run this command line :
-```
-php console i3CliManager:start test
-```
-You can't start it in a tty though, your i3session must be started.
-
-**Tag 0.1** :
-The app is currently useless. The load/saving part work though and that's the most important part.
+----
 
 FAQ
-===
+----
 **Why PHP**:
 I know that most of the i3 users wouldn't have made it in PHP but here are some of my reasons :
   - I'm a PHP developer;
@@ -81,16 +62,17 @@ I choose to save the config file in YAML because I didn't want a database for th
 yaml or json. I like yaml more as it's more readable. In any case, if you want to use the config file from your own app, it should be easy enough.
 
 Wish list
-=========
+----
 What I want from this app (at least) :
 - First :
   - Create multiple config (home, offices, …) (done)
+  - Add default layout per workspace (done)
   - Add client per workspace (done)
-  - Add Scratchpad
-  - Add client in specific split / layout
+  - Add Scratchpad (done in web app but not when running config yet)
   - A cli php script to add at the start of i3 to launch your choosen configuration (done)
+  - An export of the configuration in a bash script to not have php installed on the user pc. (done)
+  - Creating a configuration by reading your current i3Session (done)
 - Then :
+  - Add client in specific split / layout !!!! :)
   - Pre-configure i3WebManager by reading i3/config file
   - Drag & drop UI to create your i3 session as wanted
-  - An export of the configuration in a bash script to not have php installed on the user pc.
-  - Creating a configuration by reading your current i3Session

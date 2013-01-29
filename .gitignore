@@ -1,9 +1,11 @@
+<<<<<<< HEAD
 resources/cache/*
 resources/log/*
-vendor/
+vendor/*
 web/assets/*
 silex.log
 *.swp
 session.vim
 tags
-*.log
+*/logs/*
+*/cache/*
