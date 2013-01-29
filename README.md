@@ -1,4 +1,4 @@
-i3WebManager
+i55WebManager
 ============
 
 Summary
@@ -40,9 +40,9 @@ src/b55/Resources/i3Config.yml
 ```
 
 After creating your config file, you need to launch to i55CliManager. This console will launch your app in your workspace.
-To launch i3CliManager,
+To launch i55CliManager,
 ```
-php console i3CliManager:start [config_name]
+php console i55CliManager:start [config_name]
 ```
 with [config_name] the name of the config you want to launch.
 
@@ -74,5 +74,5 @@ What I want from this app (at least) :
   - Creating a configuration by reading your current i3Session (done)
 - Then :
   - Add client in specific split / layout !!!! :)
-  - Pre-configure i3WebManager by reading i3/config file
+  - Pre-configure i55WebManager by reading i3/config file
   - Drag & drop UI to create your i3 session as wanted
